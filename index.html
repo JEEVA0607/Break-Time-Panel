@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Break Time - Panel</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+</head>
+
+
+<body>
+
+  <div class="page">
+
+    <header class="topbar">
+
+        <thead>
+  <tr>
+    <th>Name</th>
+    <th>Date</th>
+    <th>Break Out</th>
+    <th>Break In</th>
+    <th>Duration</th>
+    <th>Type</th>
+    <th>Status</th>
+  </tr>
+</thead>
+
+
+      <div>
+        <h1>Break Time Panel</h1>
+
+        <p>
+          Employee Break Monitoring
+        </p>
+      </div>
+
+      <button
+        id="refreshBtn"
+        class="refreshBtn"
+      >
+        Refresh
+      </button>
+
+    </header>
+
+
+    <!-- SUMMARY -->
+
+    <section class="summary">
+
+      <div class="card">
+
+        <span>Total Employees</span>
+
+        <strong id="totalEmployees">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="card availableCard">
+
+        <span>Available</span>
+
+        <strong id="availableCount">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="card breakCard">
+
+        <span>On Break</span>
+
+        <strong id="breakCount">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="card lockedCard">
+
+        <span>PC Locked</span>
+
+        <strong id="lockedCount">
+          0
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- CURRENT STATUS -->
+
+    <section class="section">
+
+      <div class="sectionHeader">
+
+        <div>
+          <h2>Current Status</h2>
+
+          <p>
+            Live employee status
+          </p>
+        </div>
+
+        <span id="lastUpdated">
+          —
+        </span>
+
+      </div>
+
+
+      <div class="tableWrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Name</th>
+
+              <th>Date</th>
+
+              <th>Status</th>
+
+              <th>Break Out</th>
+
+              <th>Break In</th>
+
+              <th>Device</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="usersTable">
+
+            <tr>
+
+              <td colspan="7" class="empty">
+  Loading...
+</td>
+
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+
+    <section class="section">
+
+      <div class="sectionHeader">
+
+        <div>
+          <h2>Break History</h2>
+
+          <p>
+            History remains until manually deleted.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="tableWrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Name</th>
+
+              <th>Date</th>
+
+              <th>Break Out</th>
+
+              <th>Break In</th>
+
+              <th>Type</th>
+
+              <th>Status</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="historyTable">
+
+            <tr>
+
+              <td colspan="7" class="empty">
+  Loading...
+</td>
+
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <div
+      id="panelMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+
+  <script
+    type="module"
+    src="app.js"
+  ></script>
+
+</body>
+
+</html>
