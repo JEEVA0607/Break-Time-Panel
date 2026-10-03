@@ -2,7 +2,7 @@ import {
   db,
   collection,
   getDocs
-} from "../extension/panel-firebase.bundle.js";
+} from "./panel-firebase.bundle.js";
 
 
 
