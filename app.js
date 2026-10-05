@@ -5,7 +5,6 @@ import {
 } from "./panel-firebase.bundle.js";
 
 
-
 const usersTable =
   document.getElementById("usersTable");
 
@@ -29,6 +28,28 @@ const refreshBtn =
 
 const lastUpdated =
   document.getElementById("lastUpdated");
+
+const breakEmployees =
+  document.getElementById("breakEmployees");
+
+const activeBreakCount =
+  document.getElementById("activeBreakCount");
+
+const employeeLiveCount =
+  document.getElementById("employeeLiveCount");
+
+  const historySearch =
+  document.getElementById("historySearch");
+
+const historyDate =
+  document.getElementById("historyDate");
+
+const clearHistoryFilters =
+  document.getElementById("clearHistoryFilters");
+
+
+let historyRecords = [];
+
 
 
 function escapeHtml(value) {
@@ -100,13 +121,45 @@ function formatDate(value) {
   return date.toLocaleDateString();
 }
 
+function formatDateForFilter(value) {
+
+  const date =
+    toDate(value);
+
+
+  if (!date) {
+    return "";
+  }
+
+
+  const year =
+    date.getFullYear();
+
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
+
+
+  return `${year}-${month}-${day}`;
+}
+
+
 
 function statusBadge(status) {
 
   if (status === "ON_BREAK") {
 
     return `
-      <span class="status break">
+      <span class="statusBadge break">
+        <span class="badgeDot"></span>
         ON BREAK
       </span>
     `;
@@ -116,7 +169,8 @@ function statusBadge(status) {
   if (status === "PC_LOCKED") {
 
     return `
-      <span class="status locked">
+      <span class="statusBadge locked">
+        <span class="badgeDot"></span>
         PC LOCKED
       </span>
     `;
@@ -126,7 +180,8 @@ function statusBadge(status) {
   if (status === "COMPLETED") {
 
     return `
-      <span class="status completed">
+      <span class="statusBadge completed">
+        <span class="badgeDot"></span>
         COMPLETED
       </span>
     `;
@@ -134,9 +189,237 @@ function statusBadge(status) {
 
 
   return `
-    <span class="status available">
+    <span class="statusBadge available">
+      <span class="badgeDot"></span>
       AVAILABLE
     </span>
+  `;
+}
+
+
+/* =========================================================
+   EMPLOYEE CARD
+========================================================= */
+
+function employeeCard(user, id) {
+
+  const status =
+    user.status ||
+    "AVAILABLE";
+
+
+  let statusClass =
+    "available";
+
+  let statusText =
+    "Available";
+
+  let icon =
+    "✓";
+
+
+  if (status === "ON_BREAK") {
+
+    statusClass = "break";
+    statusText = "On Break";
+    icon = "☕";
+
+  } else if (status === "PC_LOCKED") {
+
+    statusClass = "locked";
+    statusText = "PC Locked";
+    icon = "🔒";
+
+  }
+
+
+  const name =
+    user.name ||
+    "Unknown Employee";
+
+
+  const device =
+    user.deviceId ||
+    id;
+
+
+  return `
+
+    <div class="employeeCard ${statusClass}">
+
+      <div class="employeeCardTop">
+
+        <div class="avatar">
+
+          ${escapeHtml(
+            name
+              .trim()
+              .charAt(0)
+              .toUpperCase()
+          )}
+
+        </div>
+
+
+        <div class="employeeMain">
+
+          <strong>
+            ${escapeHtml(name)}
+          </strong>
+
+          <span>
+            Employee
+          </span>
+
+        </div>
+
+
+        <div class="statusCircle">
+          ${icon}
+        </div>
+
+      </div>
+
+
+      <div class="employeeDivider"></div>
+
+
+      <div class="employeeDetails">
+
+        <div class="employeeDetail">
+
+          <span>
+            STATUS
+          </span>
+
+          ${statusBadge(status)}
+
+        </div>
+
+
+        <div class="employeeDetail">
+
+          <span>
+            DEVICE
+          </span>
+
+          <strong
+            class="deviceText"
+            title="${escapeHtml(device)}"
+          >
+            ${escapeHtml(device)}
+          </strong>
+
+        </div>
+
+
+        <div class="employeeDetail">
+
+          <span>
+            LAST UPDATE
+          </span>
+
+          <strong>
+            ${formatTime(user.updatedAt)}
+          </strong>
+
+        </div>
+
+
+        ${
+          status === "ON_BREAK"
+            ? `
+              <div class="employeeDetail">
+
+                <span>
+                  BREAK STARTED
+                </span>
+
+                <strong class="breakTime">
+                  ${formatTime(user.breakOut)}
+                </strong>
+
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   BREAK EMPLOYEE CARD
+========================================================= */
+
+function breakEmployeeCard(user, id) {
+
+  const name =
+    user.name ||
+    "Unknown Employee";
+
+
+  const device =
+    user.deviceId ||
+    id;
+
+
+  return `
+
+    <div class="breakEmployeeCard">
+
+      <div class="breakAvatar">
+
+        ${escapeHtml(
+          name
+            .trim()
+            .charAt(0)
+            .toUpperCase()
+        )}
+
+      </div>
+
+
+      <div class="breakEmployeeInfo">
+
+        <strong>
+          ${escapeHtml(name)}
+        </strong>
+
+        <span>
+          ${escapeHtml(device)}
+        </span>
+
+      </div>
+
+
+      <div class="breakTimer">
+
+        <span>
+          BREAK
+        </span>
+
+        <strong>
+          ${formatTime(user.breakOut)}
+        </strong>
+
+      </div>
+
+
+      <div class="breakLive">
+
+        <span class="pulse"></span>
+
+        LIVE
+
+      </div>
+
+    </div>
+
   `;
 }
 
@@ -165,97 +448,144 @@ async function loadUsers() {
     snapshot.size;
 
 
+  employeeLiveCount.textContent =
+    snapshot.size;
+
+
   if (snapshot.empty) {
 
     usersTable.innerHTML = `
-      <tr>
-        <td colspan="6" class="empty">
-          No employees found.
-        </td>
-      </tr>
+
+      <div class="emptyEmployees">
+
+        <div class="emptyIcon">
+          👥
+        </div>
+
+        <strong>
+          No employees found
+        </strong>
+
+        <span>
+          Employee records will appear here.
+        </span>
+
+      </div>
+
+    `;
+
+    breakEmployees.innerHTML = `
+
+      <div class="emptyBreak">
+
+        <div class="emptyIcon">
+          ✓
+        </div>
+
+        <strong>
+          Everyone is available
+        </strong>
+
+        <span>
+          No employees are currently on break.
+        </span>
+
+      </div>
+
     `;
 
     availableCount.textContent = "0";
     breakCount.textContent = "0";
     lockedCount.textContent = "0";
+    activeBreakCount.textContent = "0";
 
     return;
   }
 
 
-  let html = "";
+  let employeeHtml = "";
+  let breakHtml = "";
+
+  let breakEmployeesCount = 0;
 
 
-  snapshot.forEach((item) => {
+snapshot.forEach((item) => {
 
-    const user =
-      item.data();
+  const user =
+    item.data();
 
-    const status =
-      user.status ||
-      "AVAILABLE";
-
-
-    if (status === "AVAILABLE") {
-      available++;
-    }
-
-    if (status === "ON_BREAK") {
-      onBreak++;
-    }
-
-    if (status === "PC_LOCKED") {
-      locked++;
-    }
+  const status =
+    user.status ||
+    "AVAILABLE";
 
 
-    html += `
-      <tr>
+  if (status === "AVAILABLE") {
+    available++;
+  }
 
-        <td>
-          <strong>
-            ${escapeHtml(
-              user.name || "Unknown"
-            )}
-          </strong>
-        </td>
 
-        <td>
-          ${formatDate(
-            user.updatedAt
-          )}
-        </td>
+  if (status === "ON_BREAK") {
 
-        <td>
-          ${statusBadge(status)}
-        </td>
+    onBreak++;
+    locked++; // ON_BREAK also counted as PC LOCKED
 
-        <td>
-          ${formatTime(
-            user.breakOut
-          )}
-        </td>
+    breakEmployeesCount++;
 
-        <td>
-          ${formatTime(
-            user.breakIn
-          )}
-        </td>
+    breakHtml +=
+      breakEmployeeCard(
+        user,
+        item.id
+      );
 
-        <td>
-          ${escapeHtml(
-            user.deviceId ||
-            item.id
-          )}
-        </td>
+  } else if (status === "PC_LOCKED") {
 
-      </tr>
-    `;
-  });
+    locked++;
+  }
+
+
+  employeeHtml +=
+    employeeCard(
+      user,
+      item.id
+    );
+
+});
+
+
 
 
   usersTable.innerHTML =
-    html;
+    employeeHtml;
+
+
+  if (breakEmployeesCount === 0) {
+
+    breakEmployees.innerHTML = `
+
+      <div class="emptyBreak">
+
+        <div class="emptyIcon">
+          ✓
+        </div>
+
+        <strong>
+          Everyone is available
+        </strong>
+
+        <span>
+          No employees are currently on break.
+        </span>
+
+      </div>
+
+    `;
+
+  } else {
+
+    breakEmployees.innerHTML =
+      breakHtml;
+
+  }
 
 
   availableCount.textContent =
@@ -266,6 +596,9 @@ async function loadUsers() {
 
   lockedCount.textContent =
     locked;
+
+  activeBreakCount.textContent =
+    breakEmployeesCount;
 }
 
 
@@ -274,11 +607,6 @@ async function loadUsers() {
 ========================================================= */
 
 async function loadHistory() {
-
-  console.log(
-    "Loading Firestore history..."
-  );
-
 
   const snapshot =
     await getDocs(
@@ -289,27 +617,27 @@ async function loadHistory() {
     );
 
 
-  console.log(
-    "History count:",
-    snapshot.size
-  );
+ if (snapshot.empty) {
+
+  historyRecords = [];
+
+  historyTable.innerHTML = `
+    <tr>
+      <td
+        colspan="7"
+        class="emptyTable"
+      >
+        No break history found.
+      </td>
+    </tr>
+  `;
+
+  return;
+}
 
 
-  if (snapshot.empty) {
 
-    historyTable.innerHTML = `
-      <tr>
-        <td colspan="6" class="empty">
-          No break history found.
-        </td>
-      </tr>
-    `;
-
-    return;
-  }
-
-
-  const records = [];
+  let records = [];
 
 
   snapshot.forEach((item) => {
@@ -318,17 +646,11 @@ async function loadHistory() {
       item.data();
 
 
-    console.log(
-      "History:",
-      item.id,
-      data
-    );
-
-
     records.push({
       id: item.id,
       ...data
     });
+
   });
 
 
@@ -341,13 +663,101 @@ async function loadHistory() {
       toDate(b.createdAt)?.getTime() || 0;
 
     return bTime - aTime;
+
   });
+
+  historyRecords = records;
+
+renderHistory();
+
+
+}
+
+
+function renderHistory() {
+
+  const search =
+    historySearch.value
+      .trim()
+      .toLowerCase();
+
+  const selectedDate =
+    historyDate.value;
+
+
+  let filteredRecords =
+    historyRecords.filter((record) => {
+
+      const employeeName =
+        String(
+          record.name || ""
+        ).toLowerCase();
+
+
+      const recordDate =
+  getHistoryDateForFilter(record);
+
+
+
+      const matchesSearch =
+        !search ||
+        employeeName.includes(search);
+
+
+      const matchesDate =
+        !selectedDate ||
+        recordDate === selectedDate;
+
+
+      return (
+        matchesSearch &&
+        matchesDate
+      );
+
+    });
+
+
+  if (filteredRecords.length === 0) {
+
+    historyTable.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="7"
+          class="emptyTable"
+        >
+
+          <div class="noResults">
+
+            <div class="noResultsIcon">
+              🔍
+            </div>
+
+            <strong>
+              No matching history
+            </strong>
+
+            <span>
+              Try another employee name or date.
+            </span>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+  }
 
 
   let html = "";
 
 
-  records.forEach((record) => {
+  filteredRecords.forEach((record) => {
 
     const status =
       record.status ||
@@ -358,58 +768,99 @@ async function loadHistory() {
       );
 
 
-html += `
-  <tr>
+    html += `
 
-    <td>
-      <strong>
-        ${escapeHtml(
-          record.name || "Unknown"
-        )}
-      </strong>
-    </td>
+      <tr>
 
-    <td>
-      ${escapeHtml(
-        record.date ||
-        formatDate(record.createdAt)
-      )}
-    </td>
+        <td>
 
-    <td>
-      ${formatTime(
-        record.breakOut
-      )}
-    </td>
+          <div class="historyEmployee">
 
-    <td>
-      ${formatTime(
-        record.breakIn
-      )}
-    </td>
+            <div class="historyAvatar">
 
-    <td>
-      <strong>
-        ${formatDuration(
-          record.breakOut,
-          record.breakIn
-        )}
-      </strong>
-    </td>
+              ${escapeHtml(
+                (
+                  record.name ||
+                  "Unknown"
+                )
+                  .trim()
+                  .charAt(0)
+                  .toUpperCase()
+              )}
 
-    <td>
-      ${escapeHtml(
-        record.breakType ||
-        "MANUAL"
-      )}
-    </td>
+            </div>
 
-    <td>
-      ${statusBadge(status)}
-    </td>
+            <strong>
+              ${escapeHtml(
+                record.name ||
+                "Unknown"
+              )}
+            </strong>
 
-  </tr>
-`;
+          </div>
+
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            record.date ||
+            formatDate(record.createdAt)
+          )}
+        </td>
+
+
+        <td>
+          <strong>
+            ${formatTime(
+              record.breakOut
+            )}
+          </strong>
+        </td>
+
+
+        <td>
+          ${formatTime(
+            record.breakIn
+          )}
+        </td>
+
+
+        <td>
+
+          <span class="durationValue">
+
+            ${formatDuration(
+              record.breakOut,
+              record.breakIn
+            )}
+
+          </span>
+
+        </td>
+
+
+        <td>
+
+          <span class="typeBadge">
+
+            ${escapeHtml(
+              record.breakType ||
+              "MANUAL"
+            )}
+
+          </span>
+
+        </td>
+
+
+        <td>
+          ${statusBadge(status)}
+        </td>
+
+      </tr>
+
+    `;
 
   });
 
@@ -418,6 +869,11 @@ html += `
     html;
 }
 
+
+/* =========================================================
+   DURATION
+========================================================= */
+
 function formatDuration(
   breakOut,
   breakIn
@@ -425,6 +881,7 @@ function formatDuration(
 
   const start =
     toDate(breakOut);
+
 
   if (!start) {
     return "—";
@@ -438,7 +895,10 @@ function formatDuration(
 
   let seconds =
     Math.floor(
-      (end.getTime() - start.getTime()) / 1000
+      (
+        end.getTime() -
+        start.getTime()
+      ) / 1000
     );
 
 
@@ -448,13 +908,19 @@ function formatDuration(
 
 
   const hours =
-    Math.floor(seconds / 3600);
+    Math.floor(
+      seconds / 3600
+    );
+
 
   seconds %= 3600;
 
 
   const minutes =
-    Math.floor(seconds / 60);
+    Math.floor(
+      seconds / 60
+    );
+
 
   seconds %= 60;
 
@@ -486,8 +952,16 @@ async function loadPanel() {
   refreshBtn.disabled =
     true;
 
-  refreshBtn.textContent =
-    "Loading...";
+  refreshBtn.classList.add(
+    "loading"
+  );
+
+  refreshBtn.innerHTML = `
+    <span class="refreshIcon spinning">
+      ↻
+    </span>
+    Loading...
+  `;
 
 
   try {
@@ -499,10 +973,13 @@ async function loadPanel() {
 
     lastUpdated.textContent =
       "Updated " +
-      new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+      new Date().toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
 
 
   } catch (error) {
@@ -514,21 +991,39 @@ async function loadPanel() {
 
 
     usersTable.innerHTML = `
-      <tr>
-        <td colspan="6" class="empty">
-          Firebase error.
-          Check console.
-        </td>
-      </tr>
+
+      <div class="emptyEmployees errorState">
+
+        <div class="emptyIcon">
+          !
+        </div>
+
+        <strong>
+          Firebase connection error
+        </strong>
+
+        <span>
+          Please check Firebase configuration and console.
+        </span>
+
+      </div>
+
     `;
 
 
     historyTable.innerHTML = `
+
       <tr>
-        <td colspan="6" class="empty">
+
+        <td
+          colspan="7"
+          class="emptyTable"
+        >
           Could not load history.
         </td>
+
       </tr>
+
     `;
 
   } finally {
@@ -536,8 +1031,17 @@ async function loadPanel() {
     refreshBtn.disabled =
       false;
 
-    refreshBtn.textContent =
-      "Refresh";
+    refreshBtn.classList.remove(
+      "loading"
+    );
+
+    refreshBtn.innerHTML = `
+      <span class="refreshIcon">
+        ↻
+      </span>
+      Refresh
+    `;
+
   }
 }
 
@@ -558,6 +1062,31 @@ refreshBtn.addEventListener(
 
 loadPanel();
 
+historySearch.addEventListener(
+  "input",
+  renderHistory
+);
+
+
+historyDate.addEventListener(
+  "change",
+  renderHistory
+);
+
+
+clearHistoryFilters.addEventListener(
+  "click",
+  () => {
+
+    historySearch.value = "";
+
+    historyDate.value = "";
+
+    renderHistory();
+
+  }
+);
+
 
 /* =========================================================
    AUTO REFRESH
@@ -567,3 +1096,46 @@ setInterval(
   loadPanel,
   10000
 );
+
+function getHistoryDateForFilter(record) {
+
+  if (record.date) {
+
+    const date =
+      String(record.date).trim();
+
+    // YYYY-MM-DD format ആണെങ്കിൽ നേരിട്ട് use ചെയ്യാം
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date;
+    }
+
+    // മറ്റൊരു date format ആണെങ്കിൽ parse ചെയ്യാൻ ശ്രമിക്കുക
+    const parsed =
+      toDate(record.date);
+
+    if (parsed) {
+      return formatDateForFilter(parsed);
+    }
+  }
+
+
+  if (record.breakOut) {
+
+    return formatDateForFilter(
+      record.breakOut
+    );
+
+  }
+
+
+  if (record.createdAt) {
+
+    return formatDateForFilter(
+      record.createdAt
+    );
+
+  }
+
+
+  return "";
+}
