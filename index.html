@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Break Time - Panel</title>
+  <title>Break Time - Premium Panel</title>
 
   <link
     rel="stylesheet"
@@ -17,226 +17,416 @@
   >
 </head>
 
-
 <body>
 
-  <div class="page">
+  <div class="appShell">
 
-    <header class="topbar">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
 
-        <thead>
-  <tr>
-    <th>Name</th>
-    <th>Date</th>
-    <th>Break Out</th>
-    <th>Break In</th>
-    <th>Duration</th>
-    <th>Type</th>
-    <th>Status</th>
-  </tr>
-</thead>
+      <div class="brand">
 
-
-      <div>
-        <h1>Break Time Panel</h1>
-
-        <p>
-          Employee Break Monitoring
-        </p>
-      </div>
-
-      <button
-        id="refreshBtn"
-        class="refreshBtn"
-      >
-        Refresh
-      </button>
-
-    </header>
-
-
-    <!-- SUMMARY -->
-
-    <section class="summary">
-
-      <div class="card">
-
-        <span>Total Employees</span>
-
-        <strong id="totalEmployees">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="card availableCard">
-
-        <span>Available</span>
-
-        <strong id="availableCount">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="card breakCard">
-
-        <span>On Break</span>
-
-        <strong id="breakCount">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="card lockedCard">
-
-        <span>PC Locked</span>
-
-        <strong id="lockedCount">
-          0
-        </strong>
-
-      </div>
-
-    </section>
-
-
-    <!-- CURRENT STATUS -->
-
-    <section class="section">
-
-      <div class="sectionHeader">
-
-        <div>
-          <h2>Current Status</h2>
-
-          <p>
-            Live employee status
-          </p>
+        <div class="brandIcon">
+          BT
         </div>
 
-        <span id="lastUpdated">
-          —
+        <div>
+          <h2>BreakTime</h2>
+          <span>Employee Monitor</span>
+        </div>
+
+      </div>
+
+      <div class="sideStatus">
+
+        <span class="liveDot"></span>
+
+        <div>
+          <strong>System Live</strong>
+          <small>Auto refresh enabled</small>
+        </div>
+
+      </div>
+
+      <div class="sidebarBottom">
+
+        <div class="miniInfo">
+          <span>Monitoring</span>
+          <strong>Employees</strong>
+        </div>
+
+        <div class="miniInfo">
+          <span>Refresh Rate</span>
+          <strong>10 seconds</strong>
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="mainContent">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <div>
+
+          <div class="eyebrow">
+            EMPLOYEE OPERATIONS
+          </div>
+
+          <h1>
+            Break Time
+            <span>Dashboard</span>
+          </h1>
+
+          <p>
+            Monitor employee availability, active breaks and device status.
+          </p>
+
+        </div>
+
+
+        <div class="topActions">
+
+          <div class="liveIndicator">
+
+            <span class="liveDot"></span>
+
+            <div>
+              <strong>Live</strong>
+              <small id="lastUpdated">Updating...</small>
+            </div>
+
+          </div>
+
+
+          <button
+            id="refreshBtn"
+            class="refreshBtn"
+          >
+            <span class="refreshIcon">↻</span>
+            Refresh
+          </button>
+
+        </div>
+
+      </header>
+
+
+      <!-- SUMMARY -->
+      <section class="summary">
+
+        <div class="summaryCard total">
+
+          <div class="summaryTop">
+            <span>Total Employees</span>
+
+            <div class="summaryIcon">
+              👥
+            </div>
+          </div>
+
+          <strong id="totalEmployees">0</strong>
+
+          <small>
+            Registered employees
+          </small>
+
+        </div>
+
+
+        <div class="summaryCard available">
+
+          <div class="summaryTop">
+            <span>Available</span>
+
+            <div class="summaryIcon">
+              ✓
+            </div>
+          </div>
+
+          <strong id="availableCount">0</strong>
+
+          <small>
+            Ready for work
+          </small>
+
+        </div>
+
+
+        <div class="summaryCard onBreak">
+
+          <div class="summaryTop">
+            <span>On Break</span>
+
+            <div class="summaryIcon">
+              ☕
+            </div>
+          </div>
+
+          <strong id="breakCount">0</strong>
+
+          <small>
+            Currently away
+          </small>
+
+        </div>
+
+
+        <div class="summaryCard locked">
+
+          <div class="summaryTop">
+            <span>PC Locked</span>
+
+            <div class="summaryIcon">
+              🔒
+            </div>
+          </div>
+
+          <strong id="lockedCount">0</strong>
+
+          <small>
+            Device locked
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <!-- EMPLOYEES -->
+      <section class="section employeeSection">
+
+        <div class="sectionHeader">
+
+          <div>
+
+            <div class="sectionLabel">
+              LIVE MONITORING
+            </div>
+
+            <h2>
+              Employee Status
+            </h2>
+
+            <p>
+              Individual employee availability and device activity.
+            </p>
+
+          </div>
+
+          <div class="employeeCountBadge">
+            <span id="employeeLiveCount">0</span>
+            Employees
+          </div>
+
+        </div>
+
+
+        <div
+          id="usersTable"
+          class="employeeGrid"
+        >
+
+          <div class="loadingCard">
+
+            <div class="loader"></div>
+
+            <span>
+              Loading employees...
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CURRENT BREAK -->
+      <section class="section breakSection">
+
+        <div class="sectionHeader">
+
+          <div>
+
+            <div class="sectionLabel orange">
+              ACTIVE BREAKS
+            </div>
+
+            <h2>
+              Currently On Break
+            </h2>
+
+            <p>
+              Employees who are currently away from their workstation.
+            </p>
+
+          </div>
+
+          <div class="breakCountPill">
+
+            <span id="activeBreakCount">0</span>
+            Active
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="breakEmployees"
+          class="breakGrid"
+        >
+
+          <div class="emptyBreak">
+
+            <div class="emptyIcon">
+              ✓
+            </div>
+
+            <strong>
+              Everyone is available
+            </strong>
+
+            <span>
+              No employees are currently on break.
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- HISTORY -->
+      <section class="section historySection">
+
+        <div class="historyHeader">
+
+  <div>
+
+    <div class="sectionLabel">
+      ACTIVITY LOG
+    </div>
+
+    <h2>
+      Break History
+    </h2>
+
+    <p>
+      Previous employee break activity.
+    </p>
+
+  </div>
+
+
+  <div class="historyFilters">
+
+    <div class="searchBox">
+
+      <span class="searchIcon">⌕</span>
+
+      <input
+        type="text"
+        id="historySearch"
+        placeholder="Search employee..."
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <div class="dateBox">
+
+      <span>📅</span>
+
+      <input
+        type="date"
+        id="historyDate"
+      >
+
+    </div>
+
+
+    <button
+      type="button"
+      id="clearHistoryFilters"
+      class="clearFilterBtn"
+    >
+      Clear
+    </button>
+
+  </div>
+
+</div>
+
+
+
+        <div class="historyTableWrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>EMPLOYEE</th>
+                <th>DATE</th>
+                <th>BREAK OUT</th>
+                <th>BREAK IN</th>
+                <th>DURATION</th>
+                <th>TYPE</th>
+                <th>STATUS</th>
+              </tr>
+
+            </thead>
+
+
+            <tbody id="historyTable">
+
+              <tr>
+
+                <td
+                  colspan="7"
+                  class="emptyTable"
+                >
+                  Loading history...
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <footer class="footer">
+
+        <span>
+          BreakTime Employee Monitoring
         </span>
 
-      </div>
+        <span>
+          Live monitoring system
+        </span>
+
+      </footer>
 
 
-      <div class="tableWrapper">
+      <div
+        id="panelMessage"
+        class="message"
+      ></div>
 
-        <table>
-
-          <thead>
-
-            <tr>
-
-              <th>Name</th>
-
-              <th>Date</th>
-
-              <th>Status</th>
-
-              <th>Break Out</th>
-
-              <th>Break In</th>
-
-              <th>Device</th>
-
-            </tr>
-
-          </thead>
-
-
-          <tbody id="usersTable">
-
-            <tr>
-
-              <td colspan="7" class="empty">
-  Loading...
-</td>
-
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-
-    <!-- HISTORY -->
-
-    <section class="section">
-
-      <div class="sectionHeader">
-
-        <div>
-          <h2>Break History</h2>
-
-          <p>
-            History remains until manually deleted.
-          </p>
-        </div>
-
-      </div>
-
-
-      <div class="tableWrapper">
-
-        <table>
-
-          <thead>
-
-            <tr>
-
-              <th>Name</th>
-
-              <th>Date</th>
-
-              <th>Break Out</th>
-
-              <th>Break In</th>
-
-              <th>Type</th>
-
-              <th>Status</th>
-
-            </tr>
-
-          </thead>
-
-
-          <tbody id="historyTable">
-
-            <tr>
-
-              <td colspan="7" class="empty">
-  Loading...
-</td>
-
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-
-    <div
-      id="panelMessage"
-      class="message"
-    ></div>
+    </main>
 
   </div>
 
