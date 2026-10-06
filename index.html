@@ -21,48 +21,147 @@
 
   <div class="appShell">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+<!-- SIDEBAR -->
+<aside class="sidebar">
 
-      <div class="brand">
+  <div class="brand">
 
-        <div class="brandIcon">
-          BT
-        </div>
+    <div class="brandIcon">
+      BT
+    </div>
 
-        <div>
-          <h2>BreakTime</h2>
-          <span>Employee Monitor</span>
+    <div>
+      <h2>BreakTime</h2>
+      <span>Employee Monitor</span>
+    </div>
+
+  </div>
+
+
+  <div class="sideStatus">
+
+    <span class="liveDot"></span>
+
+    <div>
+      <strong>System Live</strong>
+      <small>Auto refresh enabled</small>
+    </div>
+
+  </div>
+
+
+  <!-- DASHBOARD SUMMARY -->
+  <div class="sidebarSummary">
+
+    <div class="sidebarDashboardTitle">
+
+     
+
+    </div>
+
+
+    <div class="summaryCard total">
+
+      <div class="summaryTop">
+
+        <span>Total Employees</span>
+
+        <div class="summaryIcon">
+          👥
         </div>
 
       </div>
 
-      <div class="sideStatus">
+      <strong id="totalEmployees">0</strong>
 
-        <span class="liveDot"></span>
+      <small>
+        Registered employees
+      </small>
 
-        <div>
-          <strong>System Live</strong>
-          <small>Auto refresh enabled</small>
+    </div>
+
+
+    <div class="summaryCard available">
+
+      <div class="summaryTop">
+
+        <span>Available</span>
+
+        <div class="summaryIcon">
+          ✓
         </div>
 
       </div>
 
-      <div class="sidebarBottom">
+      <strong id="availableCount">0</strong>
 
-        <div class="miniInfo">
-          <span>Monitoring</span>
-          <strong>Employees</strong>
-        </div>
+      <small>
+        Ready for work
+      </small>
 
-        <div class="miniInfo">
-          <span>Refresh Rate</span>
-          <strong>10 seconds</strong>
+    </div>
+
+
+    <div class="summaryCard onBreak">
+
+      <div class="summaryTop">
+
+        <span>On Break</span>
+
+        <div class="summaryIcon">
+          ☕
         </div>
 
       </div>
 
-    </aside>
+      <strong id="breakCount">0</strong>
+
+      <small>
+        Currently away
+      </small>
+
+    </div>
+
+
+    <div class="summaryCard locked">
+
+      <div class="summaryTop">
+
+        <span>PC Locked</span>
+
+        <div class="summaryIcon">
+          🔒
+        </div>
+
+      </div>
+
+      <strong id="lockedCount">0</strong>
+
+      <small>
+        Device locked
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <div class="sidebarBottom">
+
+    <div class="miniInfo">
+      <span>Monitoring</span>
+      <strong>Employees</strong>
+    </div>
+
+    <div class="miniInfo">
+      <span>Refresh Rate</span>
+      <strong>10 seconds</strong>
+    </div>
+
+  </div>
+
+</aside>
+
 
 
     <!-- MAIN -->
@@ -116,85 +215,7 @@
       </header>
 
 
-      <!-- SUMMARY -->
-      <section class="summary">
 
-        <div class="summaryCard total">
-
-          <div class="summaryTop">
-            <span>Total Employees</span>
-
-            <div class="summaryIcon">
-              👥
-            </div>
-          </div>
-
-          <strong id="totalEmployees">0</strong>
-
-          <small>
-            Registered employees
-          </small>
-
-        </div>
-
-
-        <div class="summaryCard available">
-
-          <div class="summaryTop">
-            <span>Available</span>
-
-            <div class="summaryIcon">
-              ✓
-            </div>
-          </div>
-
-          <strong id="availableCount">0</strong>
-
-          <small>
-            Ready for work
-          </small>
-
-        </div>
-
-
-        <div class="summaryCard onBreak">
-
-          <div class="summaryTop">
-            <span>On Break</span>
-
-            <div class="summaryIcon">
-              ☕
-            </div>
-          </div>
-
-          <strong id="breakCount">0</strong>
-
-          <small>
-            Currently away
-          </small>
-
-        </div>
-
-
-        <div class="summaryCard locked">
-
-          <div class="summaryTop">
-            <span>PC Locked</span>
-
-            <div class="summaryIcon">
-              🔒
-            </div>
-          </div>
-
-          <strong id="lockedCount">0</strong>
-
-          <small>
-            Device locked
-          </small>
-
-        </div>
-
-      </section>
 
 
       <!-- EMPLOYEES -->
