@@ -237,6 +237,9 @@ function employeeCard(user, id) {
     user.name ||
     "Unknown Employee";
 
+    const todayStats =
+  getTodayBreakStats(name);
+
 
   const device =
     user.deviceId ||
@@ -324,6 +327,32 @@ function employeeCard(user, id) {
           </strong>
 
         </div>
+
+        <div class="employeeDetail">
+
+  <span>
+    TODAY BREAKS
+  </span>
+
+  <strong>
+    ${todayStats.breakCount}
+  </strong>
+
+</div>
+
+
+<div class="employeeDetail">
+
+  <span>
+    TODAY BREAK TIME
+  </span>
+
+  <strong class="breakTime">
+    ${todayStats.totalTime}
+  </strong>
+
+</div>
+
 
 
         ${
@@ -942,6 +971,116 @@ function formatDuration(
   return `${seconds}s`;
 }
 
+function getTodayBreakStats(employeeName) {
+
+  const today =
+    new Date().toISOString().slice(0, 10);
+
+  let breakCount = 0;
+  let totalSeconds = 0;
+
+
+  historyRecords.forEach((record) => {
+
+    if (
+      String(record.name || "").trim().toLowerCase() !==
+      String(employeeName || "").trim().toLowerCase()
+    ) {
+      return;
+    }
+
+
+    const recordDate =
+      getHistoryDateForFilter(record);
+
+
+    if (recordDate !== today) {
+      return;
+    }
+
+
+    if (!record.breakOut) {
+      return;
+    }
+
+
+    breakCount++;
+
+
+    const start =
+      toDate(record.breakOut);
+
+
+    const end =
+      toDate(record.breakIn) ||
+      new Date();
+
+
+    if (!start) {
+      return;
+    }
+
+
+    const seconds =
+      Math.floor(
+        (
+          end.getTime() -
+          start.getTime()
+        ) / 1000
+      );
+
+
+    if (seconds > 0) {
+      totalSeconds += seconds;
+    }
+
+  });
+
+
+  const hours =
+    Math.floor(
+      totalSeconds / 3600
+    );
+
+
+  const minutes =
+    Math.floor(
+      (totalSeconds % 3600) / 60
+    );
+
+
+  const seconds =
+    totalSeconds % 60;
+
+
+  let totalTime = "0m";
+
+
+  if (hours > 0) {
+
+    totalTime =
+      `${hours}h ${minutes}m`;
+
+  } else if (minutes > 0) {
+
+    totalTime =
+      `${minutes}m`;
+
+  } else if (seconds > 0) {
+
+    totalTime =
+      `${seconds}s`;
+
+  }
+
+
+  return {
+    breakCount,
+    totalTime
+  };
+
+}
+
 
 /* =========================================================
    LOAD PANEL
@@ -966,9 +1105,10 @@ async function loadPanel() {
 
   try {
 
+    await loadHistory();
+
     await loadUsers();
 
-    await loadHistory();
 
 
     lastUpdated.textContent =
@@ -980,7 +1120,7 @@ async function loadPanel() {
           minute: "2-digit"
         }
       );
-
+    
 
   } catch (error) {
 
